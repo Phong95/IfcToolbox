@@ -7,6 +7,7 @@ using Xbim.Common.Geometry;
 
 namespace SplitIFC.Model
 {
+    [Serializable]
     public class Face
     {
         public List<int> Indices {  get; set; }=new List<int>();

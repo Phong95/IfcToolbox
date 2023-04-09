@@ -44,6 +44,7 @@ using (var model = IfcStore.Open(filePath))
                 var surfaceStyle = model.Instances.FirstOrDefault(x => x.EntityLabel == materialIndex);
                 if(surfaceStyle is not null)
                 {
+
                     var styles = ((Xbim.Ifc4.PresentationAppearanceResource.IfcSurfaceStyle)surfaceStyle!).Styles;
                     if (styles.Count > 0)
                     {
@@ -57,7 +58,9 @@ using (var model = IfcStore.Open(filePath))
 
             }
             var transfor = instance.Transformation; //Transformation matrix (location point inside)
-
+            viralViewerBaseObjectMesh.Transform.OffsetX = transfor.OffsetX;
+            viralViewerBaseObjectMesh.Transform.OffsetY = transfor.OffsetY;
+            viralViewerBaseObjectMesh.Transform.OffsetZ = transfor.OffsetZ;
             XbimShapeGeometry geometry = context.ShapeGeometry(instance);   //Instance's geometry
             XbimRect3D box = geometry.BoundingBox; //bounding box you need
 
@@ -86,9 +89,9 @@ using (var model = IfcStore.Open(filePath))
     //    string path = Path.Combine("D:\\Github\\IfcToolbox\\SplitIFC\\bin\\Debug\\net6.0\\output", $"Canteen{i}.ifc");
     //    InsertCopy.CopyProducts(model, path, listListProducts[i], true);
     //}
-
-    //string json = JsonSerializer.Serialize(viralViewerBaseProject);
-    //File.WriteAllText(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Canteen.json", json);
+    //BinaryExtensions.WriteToBinaryFile(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Project2.json", viralViewerBaseProject);
+    string json = JsonSerializer.Serialize(viralViewerBaseProject);
+    File.WriteAllText(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Canteen.json", json);
 }
 
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SplitIFC.Model
 {
+    [Serializable]
     public class ViralViewerBaseObject
     {
         public string Name { get; set; } = "";

@@ -7,6 +7,7 @@ using Xbim.Common.Geometry;
 
 namespace SplitIFC.Model
 {
+    [Serializable]
     public class Point
     {
         public double X { get; set; } =0;

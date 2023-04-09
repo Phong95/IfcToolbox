@@ -8,6 +8,7 @@ using System.Xml.Linq;
 
 namespace SplitIFC.Model
 {
+    [Serializable]
     public class RenderMaterial
     {
         public string Name { get; set; } = "";
