@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+    <PackageReference Include="Xbim.Geometry" Version="5.1.437" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\IfcToolbox.Tools\IfcToolbox.Tools.csproj" />
   </ItemGroup>
 
