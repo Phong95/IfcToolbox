@@ -5,6 +5,8 @@ using IfcToolbox.Tools.Configurations;
 using IfcToolbox.Tools.Processors;
 using SplitIFC.Extensions;
 using SplitIFC.Model;
+using System.Text.Json;
+using System.Xml.Linq;
 using Xbim.Common.Geometry;
 using Xbim.Common.XbimExtensions;
 using Xbim.Ifc;
@@ -12,7 +14,7 @@ using Xbim.Ifc4.Interfaces;
 using Xbim.ModelGeometry.Scene;
 
 //Console.WriteLine("Hello, World!");
-string filePath = "Project2.ifc";
+string filePath = "Canteen.ifc";
 //IConfigSplit config = ConfigFactory.CreateConfigSplit();
 //config.LogDetail = true;
 //config.SplitStrategy = SplitStrategy.ByBuildingStorey;
@@ -42,14 +44,14 @@ using (var model = IfcStore.Open(filePath))
                 var surfaceStyle = model.Instances.FirstOrDefault(x => x.EntityLabel == materialIndex);
                 if(surfaceStyle is not null)
                 {
-                    var styles = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyle)surfaceStyle!).Styles;
+                    var styles = ((Xbim.Ifc4.PresentationAppearanceResource.IfcSurfaceStyle)surfaceStyle!).Styles;
                     if (styles.Count > 0)
                     {
                         var firstMaterial = styles.First();
-                        var materialColour = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyleShading)firstMaterial).SurfaceColour;
-                        var transparent = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyleRendering)firstMaterial).Transparency;
+                        var materialColour = ((Xbim.Ifc4.PresentationAppearanceResource.IfcSurfaceStyleShading)firstMaterial).SurfaceColour;
+                        var transparent = ((Xbim.Ifc4.PresentationAppearanceResource.IfcSurfaceStyleRendering)firstMaterial).Transparency;
                         viralViewerBaseObjectMesh.Material = new RenderMaterial((double)materialColour.Red.Value, (double)materialColour.Green.Value, (double)materialColour.Blue.Value, transparent!.Value);
-                        viralViewerBaseObjectMesh.Material.Name = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcPresentationStyle)surfaceStyle).Name!.Value;
+                        viralViewerBaseObjectMesh.Material.Name = ((Xbim.Ifc4.PresentationAppearanceResource.IfcPresentationStyle)surfaceStyle).Name!.Value;
                     }
                 }
 
@@ -85,7 +87,8 @@ using (var model = IfcStore.Open(filePath))
     //    InsertCopy.CopyProducts(model, path, listListProducts[i], true);
     //}
 
-
+    //string json = JsonSerializer.Serialize(viralViewerBaseProject);
+    //File.WriteAllText(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Canteen.json", json);
 }
 
 
