@@ -15,9 +15,9 @@ namespace SplitIFC.Model
         public double Opacity { get; set; } = 1;
         public double Metalness { get; set; } = 0;
         public double Roughness { get; set; } = 1;
-        public double Red { get; set; } = 0;
-        public double Green { get; set; } = 0;
-        public double Blue { get; set; } = 0;
+        public double Red { get; set; } = 255;
+        public double Green { get; set; } = 255;
+        public double Blue { get; set; } = 255;
 
         //public int Diffuse { get; set; } = Color.LightGray.ToArgb();
         //public int Emissive { get; set; } = Color.Black.ToArgb();

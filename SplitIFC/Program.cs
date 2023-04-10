@@ -3,6 +3,7 @@ using IfcToolbox.Core.Editors;
 using IfcToolbox.Core.Utilities;
 using IfcToolbox.Tools.Configurations;
 using IfcToolbox.Tools.Processors;
+using Newtonsoft.Json;
 using SplitIFC.Extensions;
 using SplitIFC.Model;
 using System.Text.Json;
@@ -14,7 +15,7 @@ using Xbim.Ifc4.Interfaces;
 using Xbim.ModelGeometry.Scene;
 
 //Console.WriteLine("Hello, World!");
-string filePath = "Canteen.ifc";
+string filePath = "Cofico_Office-FM-220829.ifc";
 //IConfigSplit config = ConfigFactory.CreateConfigSplit();
 //config.LogDetail = true;
 //config.SplitStrategy = SplitStrategy.ByBuildingStorey;
@@ -42,25 +43,29 @@ using (var model = IfcStore.Open(filePath))
             {
                 int materialIndex = instance.StyleLabel;
                 var surfaceStyle = model.Instances.FirstOrDefault(x => x.EntityLabel == materialIndex);
-                if(surfaceStyle is not null)
+                if (surfaceStyle is not null)
                 {
 
-                    var styles = ((Xbim.Ifc4.PresentationAppearanceResource.IfcSurfaceStyle)surfaceStyle!).Styles;
+                    var styles = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyle)surfaceStyle!).Styles;
                     if (styles.Count > 0)
                     {
                         var firstMaterial = styles.First();
-                        var materialColour = ((Xbim.Ifc4.PresentationAppearanceResource.IfcSurfaceStyleShading)firstMaterial).SurfaceColour;
-                        var transparent = ((Xbim.Ifc4.PresentationAppearanceResource.IfcSurfaceStyleRendering)firstMaterial).Transparency;
+                        var materialColour = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyleShading)firstMaterial).SurfaceColour;
+                        var transparent = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyleRendering)firstMaterial).Transparency;
                         viralViewerBaseObjectMesh.Material = new RenderMaterial((double)materialColour.Red.Value, (double)materialColour.Green.Value, (double)materialColour.Blue.Value, transparent!.Value);
-                        viralViewerBaseObjectMesh.Material.Name = ((Xbim.Ifc4.PresentationAppearanceResource.IfcPresentationStyle)surfaceStyle).Name!.Value;
+                        viralViewerBaseObjectMesh.Material.Name = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcPresentationStyle)surfaceStyle).Name!.Value;
                     }
                 }
 
             }
-            var transfor = instance.Transformation; //Transformation matrix (location point inside)
-            viralViewerBaseObjectMesh.Transform.OffsetX = transfor.OffsetX;
-            viralViewerBaseObjectMesh.Transform.OffsetY = transfor.OffsetY;
-            viralViewerBaseObjectMesh.Transform.OffsetZ = transfor.OffsetZ;
+            var transfor = instance.Transformation;
+            //Transformation matrix (location point inside)
+            //viralViewerBaseObjectMesh.Transform.OffsetX = transfor.OffsetX;
+            //viralViewerBaseObjectMesh.Transform.OffsetY = transfor.OffsetY;
+            //viralViewerBaseObjectMesh.Transform.OffsetZ = transfor.OffsetZ;
+            var matrixItem = transfor.ToString().Split(' ');
+            var matrix4 = JsonConvert.SerializeObject(matrixItem);
+            viralViewerBaseObjectMesh.Matrix4 = matrix4;
             XbimShapeGeometry geometry = context.ShapeGeometry(instance);   //Instance's geometry
             XbimRect3D box = geometry.BoundingBox; //bounding box you need
 
@@ -75,7 +80,7 @@ using (var model = IfcStore.Open(filePath))
                     List<XbimFaceTriangulation> faces = (mesh.Faces as List<XbimFaceTriangulation>)!;
                     List<XbimPoint3D> vertices = (mesh.Vertices as List<XbimPoint3D>)!;
                     viralViewerBaseObjectMesh.Vertices = vertices.Select(x => new Point(x)).ToList();
-                    viralViewerBaseObjectMesh.Faces = faces.Select(x=> new Face(x)).ToList();
+                    viralViewerBaseObjectMesh.Faces = faces.Select(x => new Face(x)).ToList();
                     viralViewerBaseObject.DisplayValue.Add(viralViewerBaseObjectMesh);
                 }
             }
@@ -90,8 +95,8 @@ using (var model = IfcStore.Open(filePath))
     //    InsertCopy.CopyProducts(model, path, listListProducts[i], true);
     //}
     //BinaryExtensions.WriteToBinaryFile(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Project2.json", viralViewerBaseProject);
-    string json = JsonSerializer.Serialize(viralViewerBaseProject);
-    File.WriteAllText(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Canteen.json", json);
+    string json = System.Text.Json.JsonSerializer.Serialize(viralViewerBaseProject);
+    File.WriteAllText(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Cofico_Office-FM-220829.json", json);
 }
 
 
@@ -103,7 +108,7 @@ using (var model = IfcStore.Open(filePath))
 
 //    List<XbimShapeGeometry> geometrys = context.ShapeGeometries().ToList();
 //    List<XbimShapeInstance> instances = context.ShapeInstances().ToList();
-    
+
 //    //Check all the instances
 //    foreach (var instance in instances)
 //    {
