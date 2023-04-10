@@ -15,7 +15,7 @@ using Xbim.Ifc4.Interfaces;
 using Xbim.ModelGeometry.Scene;
 
 //Console.WriteLine("Hello, World!");
-string filePath = "Cofico_Office-FM-220829.ifc";
+string filePath = "DHG-S-ZZ-ZZ-ZZ-FACTORY AND OFFICE-221008_Dat.ifc";
 //IConfigSplit config = ConfigFactory.CreateConfigSplit();
 //config.LogDetail = true;
 //config.SplitStrategy = SplitStrategy.ByBuildingStorey;
@@ -96,7 +96,7 @@ using (var model = IfcStore.Open(filePath))
     //}
     //BinaryExtensions.WriteToBinaryFile(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Project2.json", viralViewerBaseProject);
     string json = System.Text.Json.JsonSerializer.Serialize(viralViewerBaseProject);
-    File.WriteAllText(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Cofico_Office-FM-220829.json", json);
+    File.WriteAllText(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\DHG-S-ZZ-ZZ-ZZ-FACTORY AND OFFICE-221008_Dat.json", json);
 }
 
 
