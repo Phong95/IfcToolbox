@@ -11,6 +11,5 @@ namespace SplitIFC.Model
     {
         public string Name { get; set; } = "";
         public List<Mesh> DisplayValue { get; set; } = new List<Mesh>();
-        public List<ViralViewerBaseObject> Child { get; set; } = new List<ViralViewerBaseObject>();
     }
 }

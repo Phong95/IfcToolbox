@@ -15,7 +15,7 @@ using Xbim.Ifc4.Interfaces;
 using Xbim.ModelGeometry.Scene;
 
 //Console.WriteLine("Hello, World!");
-string filePath = "DHG-S-ZZ-ZZ-ZZ-FACTORY AND OFFICE-221008_Dat.ifc";
+string filePath = "Cofico_Office-FM-220829.ifc";
 //IConfigSplit config = ConfigFactory.CreateConfigSplit();
 //config.LogDetail = true;
 //config.SplitStrategy = SplitStrategy.ByBuildingStorey;
@@ -27,7 +27,7 @@ using (var model = IfcStore.Open(filePath))
     context.CreateContext();
     var requiredProducts = model.Instances.OfType<IIfcProduct>().Where(x => !(x is IIfcSpatialStructureElement)).ToList();
     //styles=>surfacestyles
-    ViralViewerBaseObject viralViewerBaseProject = new ViralViewerBaseObject();
+    ViralViewerBaseProject viralViewerBaseProject = new ViralViewerBaseProject();
 
     foreach (var item in requiredProducts)
     {
@@ -49,11 +49,23 @@ using (var model = IfcStore.Open(filePath))
                     var styles = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyle)surfaceStyle!).Styles;
                     if (styles.Count > 0)
                     {
-                        var firstMaterial = styles.First();
-                        var materialColour = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyleShading)firstMaterial).SurfaceColour;
-                        var transparent = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyleRendering)firstMaterial).Transparency;
-                        viralViewerBaseObjectMesh.Material = new RenderMaterial((double)materialColour.Red.Value, (double)materialColour.Green.Value, (double)materialColour.Blue.Value, transparent!.Value);
-                        viralViewerBaseObjectMesh.Material.Name = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcPresentationStyle)surfaceStyle).Name!.Value;
+                        string materialName = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcPresentationStyle)surfaceStyle).Name!.Value;
+                        int findedIndex = viralViewerBaseProject.Materials.FindIndex(x => x.Name == materialName);
+                        if(findedIndex>=0)
+                        {
+                            viralViewerBaseObjectMesh.MaterialIndex = findedIndex;
+                        }
+                        else
+                        {
+                            var firstMaterial = styles.First();
+                            var materialColour = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyleShading)firstMaterial).SurfaceColour;
+                            var transparent = ((Xbim.Ifc2x3.PresentationAppearanceResource.IfcSurfaceStyleRendering)firstMaterial).Transparency;
+                            RenderMaterial newMaterial = new RenderMaterial((double)materialColour.Red.Value, (double)materialColour.Green.Value, (double)materialColour.Blue.Value, transparent!.Value);
+                            newMaterial.Name = materialName;
+                            viralViewerBaseProject.Materials.Add(newMaterial);
+                            viralViewerBaseObjectMesh.MaterialIndex = viralViewerBaseProject.Materials.Count - 1;
+                        }
+
                     }
                 }
 
@@ -85,7 +97,7 @@ using (var model = IfcStore.Open(filePath))
                 }
             }
         }
-        viralViewerBaseProject.Child.Add(viralViewerBaseObject);
+        viralViewerBaseProject.Objects.Add(viralViewerBaseObject);
     }
     //var listListProducts  = requiredProducts.Divide(20);
     //for (int i = 0; i < listListProducts.Count(); i++)
@@ -95,8 +107,10 @@ using (var model = IfcStore.Open(filePath))
     //    InsertCopy.CopyProducts(model, path, listListProducts[i], true);
     //}
     //BinaryExtensions.WriteToBinaryFile(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Project2.json", viralViewerBaseProject);
+    viralViewerBaseProject.Objects = viralViewerBaseProject.Objects.Where(x=>x.DisplayValue.Count!=0).ToList();
     string json = System.Text.Json.JsonSerializer.Serialize(viralViewerBaseProject);
-    File.WriteAllText(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\DHG-S-ZZ-ZZ-ZZ-FACTORY AND OFFICE-221008_Dat.json", json);
+    string final =  StringCompressionExtensions.Compress(json);
+    File.WriteAllText(@"D:\Github\IfcToolbox\SplitIFC\bin\Debug\net6.0\output\Cofico_Office-FM-220829-compress.json", final);
 }
 
 
